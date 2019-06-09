@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home.vue';
+import Member from '@/views/Member.vue';
+import Event from '@/views/Event.vue';
+import Preview from '@/views/Preview.vue';
+import Login from '@/views/Login.vue';
+import PageContainer from '@/views/PageContainer.vue';
 
 Vue.use(Router);
 
@@ -9,17 +13,33 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: Home,
+      path: '/login',
+      component: Login,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
+      path: '/',
+      component: PageContainer,
+      children: [
+        {
+          path: '/',
+          redirect: '/member',
+        },
+        {
+          path: '/member',
+          name: 'member',
+          component: Member,
+        },
+        {
+          path: '/event',
+          name: 'event',
+          component: Event,
+        },
+        {
+          path: '/preview',
+          name: 'preview',
+          component: Preview,
+        }
+      ],
     },
   ],
 });

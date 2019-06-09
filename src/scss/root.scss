@@ -1,0 +1,15 @@
+
+.button--primary {
+  background-color: #2488fd;
+  color: whitesmoke;
+}
+
+.error--text {
+  color: #ff5252!important;
+  caret-color: #ff5252!important;
+}
+
+.theme--dark.v-btn.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline) {
+  background-color: rgba(0,0,0,.12)!important;
+  color: #BDBDBD !important;
+}

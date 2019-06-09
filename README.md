@@ -1,34 +1,14 @@
 # vue-random-calendar
 
-## Project setup
-```
-yarn install
-```
+### It's just fun project with Vue (and Vuetifyjs), Google Calendar and Firebase Database
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+## Functionality
+- Add/Edit/Delete members
+- Setup a Google Calendar event
+- Assign the event to each member, and randomly set in different date
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+## Flow
+https://cacoo.com/diagrams/qMVrNAgyxo7v2wCl/F7B46
+![flow](https://cacoo.com/diagrams/qMVrNAgyxo7v2wCl-F7B46.png)
 
-### Run your tests
-```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Run your unit tests
-```
-yarn run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## No Test Yet
