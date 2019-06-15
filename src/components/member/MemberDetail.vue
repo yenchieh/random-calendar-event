@@ -21,10 +21,7 @@
 
       </v-layout>
 
-      <v-expansion-panel
-        v-model="memberFocus"
-        popout
-      >
+      <v-expansion-panel>
         <v-expansion-panel-content
           v-for="(member, index) in members"
           :key="member.name"
@@ -54,7 +51,7 @@
                 />
               </v-flex>
 
-              <v-flex xs8 sm8 md8>
+              <v-flex xs9 sm9 md9>
                 <strong>{{ member.name }}</strong>
                 <span
                   v-if="member.email"
@@ -65,7 +62,6 @@
               </v-flex>
 
               <v-flex
-                v-if="isFocused(index)"
                 @click.stop.prevent="showDeleteConfirmation(member)"
                 xs1 sm1 md1 align-self-end
               >
@@ -127,6 +123,7 @@
       v-model="showAddMemberForm"
       max-width="500"
       content-class="addMemberForm"
+      :key="uniqueKey"
     >
       <AddMember
         @add:member="addMember"
@@ -149,23 +146,22 @@
     components: {AddMember},
   })
   export default class MemberDetail extends Vue {
-    @memberModule.Action("selectMember") selectMember!: (memberId: number) => Promise<any>;
-    @memberModule.Action("unselectMember") unselectMember!: (memberId: number) => Promise<any>;
-    @memberModule.Action("toggleSelectMember") toggleSelectMember!: (memberId: number) => Promise<any>;
-    @memberModule.Action("addMember") addMemberToStore!: (member: Member) => Promise<any>;
-    @memberModule.Action("deleteMember") deleteMemberToStore!: (memberId: number) => Promise<any>;
+    @memberModule.Action("selectMember") selectMember!: (memberId: string) => Promise<any>;
+    @memberModule.Action("unselectMember") unselectMember!: (memberId: string) => Promise<any>;
+    @memberModule.Action("toggleSelectMember") toggleSelectMember!: (memberId: string) => Promise<any>;
+    @memberModule.Action("deleteMember") deleteMemberToStore!: (memberId: string) => Promise<any>;
     @Prop(Array) members!: Member[];
 
-    public memberFocus: number | null = null;
     public deleteConfirmation: boolean = false;
     public deletingMember: Member | null = null;
     public deleteLoading: boolean = false;
     public showAddMemberForm: boolean = false;
     public isSelectedAll: boolean = false;
+    public uniqueKey: number = 0;
 
-    @Watch('memberFocus')
-    private onMemberFocusChange() {
-
+    @Watch('showAddMemberForm')
+    private onShowAddMemberChanged() {
+      this.uniqueKey = new Date().getTime();
     }
 
     private removeMember() {
@@ -189,28 +185,14 @@
     private selectOrDeselectAll() {
       this.isSelectedAll = !this.isSelectedAll;
       if (this.isSelectedAll) {
-        this.selectMember(-1);
+        this.selectMember('');
       } else {
-        this.unselectMember(-1);
+        this.unselectMember('');
       }
-    }
-
-
-    private addMember(member: Member) {
-      const memberState: Member = {
-        ...member,
-        id: new Date().getTime(),
-        selected: false,
-      };
-      this.addMemberToStore(memberState);
     }
 
     private clickedCheckbox(member: Member) {
       this.toggleSelectMember(member.id);
-    }
-
-    private isFocused(index: number) {
-      return this.memberFocus === index;
     }
 
   }
@@ -242,6 +224,10 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  .v-expansion-panel__header {
+    cursor: default;
   }
 
 </style>

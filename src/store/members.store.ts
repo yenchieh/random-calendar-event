@@ -1,5 +1,6 @@
-import {Member, MemberState} from '@/model/member';
-import {ActionTree, GetterTree, Module, MutationTree} from 'vuex';
+import { Member, MemberState } from '@/model/member';
+import { ActionTree, GetterTree, Module, MutationTree } from 'vuex';
+import firebase from 'firebase';
 
 const state: MemberState = {
   members: [],
@@ -16,47 +17,29 @@ const getters: GetterTree<MemberState, {}> = {
 };
 
 const actions: ActionTree<MemberState, {}> = {
-  fetchData({commit}) {
-    // TODO: fetch data from Firebase
-    commit('INIT_MEMBERS', [
-      {
-        id: 1,
-        name: 'Jay',
-        icon: 'https://image.flaticon.com/icons/svg/1076/1076877.svg',
-        title: 'Developer',
-        email: 'yenchieh-test+1@gmail.com',
-        note: 'You are not right',
-      },
-      {
-        id: 2,
-        name: 'Yen-Chieh Chen',
-        icon: 'https://image.flaticon.com/icons/svg/616/616554.svg',
-        title: 'Jay',
-        email: 'yenchieh-test+2@gmail.com',
-        note: 'You are not !!!!',
-      },
-      {
-        id: 3,
-        name: 'Joyce',
-        icon: 'https://image.flaticon.com/icons/svg/291/291212.svg',
-        title: 'JOyce',
-        email: 'yenchieh-test+3@gmail.com',
-        note: 'You are not !!!!',
-      },
-    ]);
+  fetchData({ commit }) {
+    firebase.database().ref('member').once('value').then((result: any) => {
+      const members: Map<string, Member> = new Map(Object.entries(result.val()));
+      console.log(Array.from(members.values()));
+      commit('INIT_MEMBERS', Array.from(members.values()));
+    });
+
   },
-  selectMember({commit}, memberId: number) {
+  addMember({ commit }, member: Member) {
+    commit('ADD_MEMBERS', [member]);
+  },
+  selectMember({ commit }, memberId: string) {
     commit('SELECT_MEMBER', memberId);
   },
-  unselectMember({commit}, memberId: number) {
+  unselectMember({ commit }, memberId: string) {
     commit('UNSELECT_MEMBER', memberId);
   },
-  toggleSelectMember({commit}, memberId: number) {
+  toggleSelectMember({ commit }, memberId: string) {
     const index = state.members.findIndex((m: Member) => m.id === memberId);
-    if (index === -1) {
+    if(index === -1) {
       return;
     }
-    if (state.members[index].selected) {
+    if(state.members[index].selected) {
       commit('UNSELECT_MEMBER', memberId);
       return;
     }
@@ -64,7 +47,7 @@ const actions: ActionTree<MemberState, {}> = {
 
     commit('SELECT_MEMBER', memberId);
   },
-  deleteMember({commit}, memberId: number) {
+  deleteMember({ commit }, memberId: number) {
     commit('DELETE_MEMBER', memberId);
   }
 };
@@ -73,6 +56,7 @@ const mutations: MutationTree<MemberState> = {
   INIT_MEMBERS: (state, members: Member[]) => {
     state.members = [];
     members.forEach((m: Member) => {
+      console.log(m);
       state.members.push({
         ...m,
         selected: false,
@@ -82,23 +66,26 @@ const mutations: MutationTree<MemberState> = {
 
   ADD_MEMBERS: (state, members: Member[]) => {
     members.forEach((m: Member) => {
-      state.members.unshift({
-        ...m,
-        selected: false,
+      firebase.database().ref(`member/${m.id}`).set(m).then((result: any) => {
+        console.log(result);
+        state.members.unshift({
+          ...m,
+          selected: false,
+        });
       });
     });
   },
 
-  SELECT_MEMBER: (state, memberId: number) => {
-    if (memberId == -1) {
-      for (let i = 0; i < state.members.length; i++) {
+  SELECT_MEMBER: (state, memberId: string) => {
+    if(memberId == '') {
+      for(let i = 0; i < state.members.length; i++) {
         state.members[i].selected = true;
       }
       return;
     }
 
     const index = state.members.findIndex(m => m.id === memberId);
-    if (index === -1) {
+    if(index === -1) {
       return;
     }
     const member = Object.assign({}, state.members[index]);
@@ -106,27 +93,30 @@ const mutations: MutationTree<MemberState> = {
     state.members.splice(index, 1, member);
   },
 
-  UNSELECT_MEMBER: (state, memberId: number) => {
-    if (memberId == -1) {
-      for (let i = 0; i < state.members.length; i++) {
+  UNSELECT_MEMBER: (state, memberId: string) => {
+    if(memberId == '') {
+      for(let i = 0; i < state.members.length; i++) {
         state.members[i].selected = false;
       }
       return;
     }
 
     const index = state.members.findIndex(m => m.id === memberId);
-    if (index === -1) {
+    if(index === -1) {
       return;
     }
     state.members[index].selected = false;
   },
 
-  DELETE_MEMBER: (state, memberId: number) => {
-    const index = state.members.findIndex(m => m.id === memberId);
-    if (index === -1) {
-      return;
-    }
-    state.members.splice(index, 1);
+  DELETE_MEMBER: (state, memberId: string) => {
+    firebase.database().ref(`member/${memberId}`).remove().then(() => {
+      const index = state.members.findIndex(m => m.id === memberId);
+      if(index === -1) {
+        return;
+      }
+      state.members.splice(index, 1);
+    });
+
   },
 };
 
