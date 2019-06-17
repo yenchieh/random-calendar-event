@@ -126,7 +126,6 @@
       :key="uniqueKey"
     >
       <AddMember
-        @add:member="addMember"
         @close="showAddMemberForm = false"
       />
     </v-dialog>

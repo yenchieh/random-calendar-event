@@ -6,7 +6,10 @@ import store from './store/store';
 import Vuetify from 'vuetify';
 
 import VueMoment from 'vue-moment';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/database';
+
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify);
@@ -15,19 +18,20 @@ Vue.use(VueMoment, {
   locale: 'en'
 });
 
+const w: any = window;
+
 firebase.initializeApp({
-  apiKey: '',
+  apiKey: w.LocalEnvVar.apiKey,
   authDomain: 'calendar-f716b.firebaseapp.com',
   databaseURL: 'https://calendar-f716b.firebaseio.com',
 });
 
 gapi.load('auth2', () => {
-  const loadAuth2 = gapi.auth2.init({ client_id: '1085697004242-915th2t6eman8vnkgsa3apo48cumgv1q.apps.googleusercontent.com',
-  });
+  const loadAuth2 = gapi.auth2.init({ client_id: w.LocalEnvVar.clientId });
   const loadClient = gapi.load('client', () => {
     gapi.client.init({
-      apiKey: '',
-      clientId: '1085697004242-915th2t6eman8vnkgsa3apo48cumgv1q.apps.googleusercontent.com',
+      apiKey: w.LocalEnvVar.apiKey,
+      clientId: '1085697004242-915th2t6eman8vnkgsa3apo48cumgv1q.apps.googleusercontent.com', //w.LocalEnvVar.clientId,
       discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
       scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
     })

@@ -12,6 +12,7 @@
           required
         ></v-text-field>
       </v-flex>
+      <!-- Start Date Picker -->
       <v-flex xs6 sm6 md6>
         <v-menu
           v-model="showStartPicker"
@@ -38,8 +39,10 @@
             full-width
           ></v-date-picker>
         </v-menu>
-
       </v-flex>
+      <!-- Start Date Picker END -->
+
+      <!-- End Date Picker -->
       <v-flex xs6 sm6 md6>
         <v-menu
           v-model="showEndPicker"
@@ -68,6 +71,9 @@
         </v-menu>
 
       </v-flex>
+      <!-- End Date Picker END -->
+
+      <!-- Start Time Picker -->
       <v-flex xs6 sm6 md6>
         <v-menu
           v-model="showStartTimePicker"
@@ -96,6 +102,9 @@
           ></v-time-picker>
         </v-menu>
       </v-flex>
+      <!-- END -->
+
+      <!-- End Time Picker -->
       <v-flex xs6 sm6 md6>
         <v-menu
           v-model="showEndTimePicker"
@@ -124,6 +133,8 @@
           ></v-time-picker>
         </v-menu>
       </v-flex>
+      <!-- End -->
+
       <v-flex xs12 sm12 md12>
         <v-textarea
           v-model="description"
@@ -141,8 +152,10 @@
 import DatePicker from '@/components/event/DatePicker.vue';
 import {namespace} from 'vuex-class';
 import {Event} from '@/model/event';
+  import { Member } from "@/model/member";
 
 const eventModule = namespace('eventStore');
+const memberModule = namespace('memberStore');
 
 @Component({
   components: {DatePicker},
@@ -155,6 +168,8 @@ export default class EventDetail extends Vue {
   @eventModule.Mutation('SET_END_DATE') setEndDate!: (end: string) => void;
   @eventModule.Mutation('SET_END_TIME') setEndTime!: (end: string) => void;
   @eventModule.Mutation('SET_DESCRIPTION') setDescription!: (description: string) => void;
+
+  @memberModule.Getter('members') members!: Member[];
 
   title: string = '';
   description: string = '';
@@ -169,6 +184,10 @@ export default class EventDetail extends Vue {
   endTime: string = '';
 
   created() {
+    if(this.members.length === 0) {
+      this.$router.push('/member');
+    }
+
     this.title = this.event.title;
     this.description = this.event.description;
     this.startDate = this.event.startDate;
@@ -191,7 +210,10 @@ export default class EventDetail extends Vue {
   }
 
   @Watch('startDate')
-  onStartDateChanged() {
+  onStartDateChanged(current: string, old: string) {
+    if(old === '') {
+      this.showEndPicker = true;
+    }
     this.setStartDate(this.startDate);
   }
 

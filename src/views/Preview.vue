@@ -80,9 +80,15 @@
     private $gapi!: any;
 
     created() {
-      this.start = this.$moment().format('YYYY-MM-DD');
+      if(!this.event.startDate) {
+        this.$router.push('/event');
+      }
+    }
 
+    mounted() {
+      this.start = this.$moment().format('YYYY-MM-DD');
       this.assignEvents();
+      console.log('mount');
     }
 
     assignEvents() {
@@ -92,15 +98,19 @@
       const eventEnd = this.$moment(this.event.endDate);
       const duration = this.$moment.duration(eventEnd.diff(eventStart));
 
+      let j = 0;
       for(let i = 0; i < duration.days(); i++) {
-        if(!memberArray[i]) {
-          break;
+        if(!memberArray[j]) {
+          j = 0;
         }
-        this.eventMap.set(eventStart.format('YYYY-MM-DD'), {
-          title: memberArray[i].name,
-          member: memberArray[i],
-          date: eventStart,
-        });
+        if(eventStart.day() !== 6 && eventStart.day() !== 0) {
+          this.eventMap.set(eventStart.format('YYYY-MM-DD'), {
+            title: memberArray[j].name,
+            member: memberArray[j],
+            date: eventStart,
+          });
+        }
+        j++;
         eventStart.add(1, 'days');
       }
       this.$forceUpdate();
@@ -130,8 +140,6 @@
         this.pushEvent(start, end, value.member);
 
       });
-
-
     }
 
     async pushEvent(start: any, end: any, member: Member) {
@@ -159,7 +167,6 @@
       }).then((result: any) => {
         console.log(result);
       });
-
     }
 
     private previousStep() {

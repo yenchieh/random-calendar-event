@@ -19,8 +19,10 @@ const getters: GetterTree<MemberState, {}> = {
 const actions: ActionTree<MemberState, {}> = {
   fetchData({ commit }) {
     firebase.database().ref('member').once('value').then((result: any) => {
+      if(!result.val()) {
+        return;
+      }
       const members: Map<string, Member> = new Map(Object.entries(result.val()));
-      console.log(Array.from(members.values()));
       commit('INIT_MEMBERS', Array.from(members.values()));
     });
 
@@ -43,7 +45,6 @@ const actions: ActionTree<MemberState, {}> = {
       commit('UNSELECT_MEMBER', memberId);
       return;
     }
-    console.log(state.members[index].selected);
 
     commit('SELECT_MEMBER', memberId);
   },
@@ -56,7 +57,6 @@ const mutations: MutationTree<MemberState> = {
   INIT_MEMBERS: (state, members: Member[]) => {
     state.members = [];
     members.forEach((m: Member) => {
-      console.log(m);
       state.members.push({
         ...m,
         selected: false,
@@ -67,7 +67,6 @@ const mutations: MutationTree<MemberState> = {
   ADD_MEMBERS: (state, members: Member[]) => {
     members.forEach((m: Member) => {
       firebase.database().ref(`member/${m.id}`).set(m).then((result: any) => {
-        console.log(result);
         state.members.unshift({
           ...m,
           selected: false,
