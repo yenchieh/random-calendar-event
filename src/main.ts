@@ -31,7 +31,7 @@ gapi.load('auth2', () => {
   const loadClient = gapi.load('client', () => {
     gapi.client.init({
       apiKey: w.LocalEnvVar.apiKey,
-      clientId: '1085697004242-915th2t6eman8vnkgsa3apo48cumgv1q.apps.googleusercontent.com', //w.LocalEnvVar.clientId,
+      clientId: w.LocalEnvVar.clientId,
       discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
       scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
     })
@@ -50,3 +50,5 @@ gapi.load('auth2', () => {
     }).$mount('#app');
   })
 });
+
+// docker run -e FIREBASE_API_KEY=AIzaSyAn7_XViedoGUcJPl3i64CFZewD0gxwHP8 -e CLIENT_ID=p9qkn7k06u837lj5hdeh6au9rc@group.calendar.google.com 7961c53ae50a
