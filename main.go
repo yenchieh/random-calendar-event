@@ -10,6 +10,7 @@ type Env struct {
 	Debug bool
 	ApiKey string
 	ClientId string
+	CalendarId string
 }
 var envVar = Env{}
 
@@ -22,16 +23,21 @@ func main() {
 
 	// Firebase key
 	apiKey := os.Getenv("FIREBASE_API_KEY")
-	calendarId := os.Getenv("CLIENT_ID")
-	if apiKey == "" || calendarId == "" {
+	clientId := os.Getenv("CLIENT_ID")
+	if apiKey == "" || clientId == "" {
 		panic("FIREBASE_API_KEY and CLIENT_ID is required")
 		return
+	}
+
+	calendarId := os.Getenv("CALENDAR_ID")
+	if calendarId == "" {
+		calendarId = "p9qkn7k06u837lj5hdeh6au9rc@group.calendar.google.com"
 	}
 
 	envVar = Env{
 		Debug: debug,
 		ApiKey: apiKey,
-		ClientId: calendarId,
+		ClientId: clientId,
 	}
 
 	r := gin.Default()

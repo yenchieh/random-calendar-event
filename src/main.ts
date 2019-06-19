@@ -34,10 +34,13 @@ gapi.load('auth2', () => {
       clientId: w.LocalEnvVar.clientId,
       discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
       scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
-    })
-  });
+    }).then((result: any) => {
+      console.log('auth2');
+      console.log(result);
+    });
+  })
 
-  Promise.all([loadAuth2, loadClient]).then(() => {
+  Promise.all([loadAuth2, loadClient]).then((result: any) => {
     Vue.prototype.$googleAuth = gapi.auth2.getAuthInstance();
     gapi.client.load('calendar', 'v3', () => {
       console.log('loaded calendar');
@@ -51,4 +54,3 @@ gapi.load('auth2', () => {
   })
 });
 
-// docker run -e FIREBASE_API_KEY=AIzaSyAn7_XViedoGUcJPl3i64CFZewD0gxwHP8 -e CLIENT_ID=p9qkn7k06u837lj5hdeh6au9rc@group.calendar.google.com 7961c53ae50a
